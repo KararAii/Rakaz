@@ -1,2 +1,0 @@
-# Rakaz
-Created by Rork
