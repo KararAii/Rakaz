@@ -12,10 +12,22 @@ export interface PressableScaleProps {
   disabled?: boolean;
   accessibilityLabel?: string;
   hitSlop?: number;
+  onLongPress?: () => void;
+  accessibilityState?: { selected?: boolean };
 }
 
 /** Springy press feedback used across tappable cards and buttons. */
-export function PressableScale({ onPress, children, style, scale = 0.97, disabled = false, accessibilityLabel, hitSlop }: PressableScaleProps) {
+export function PressableScale({
+  onPress,
+  onLongPress,
+  children,
+  style,
+  scale = 0.97,
+  disabled = false,
+  accessibilityLabel,
+  accessibilityState,
+  hitSlop,
+}: PressableScaleProps) {
   const value = useRef(new Animated.Value(1)).current;
   const opacity = useRef(new Animated.Value(1)).current;
   const animate = (pressed: boolean) => {
@@ -29,12 +41,13 @@ export function PressableScale({ onPress, children, style, scale = 0.97, disable
     <AnimatedPressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
-      accessibilityState={{ disabled }}
+      accessibilityState={{ ...accessibilityState, disabled }}
       disabled={disabled}
       hitSlop={hitSlop}
       onPressIn={() => animate(true)}
       onPressOut={() => animate(false)}
       onPress={onPress}
+      onLongPress={onLongPress}
       style={[style, { opacity, transform: [{ scale: value }] }]}
     >
       {children}

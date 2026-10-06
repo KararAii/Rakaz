@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { ChevronRight } from 'lucide-react-native';
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText } from '@/components/AppText';
@@ -13,7 +13,7 @@ export interface ScreenHeaderProps {
   /** Leading control; defaults to a back chevron. */
   leading?: ReactNode;
   trailing?: ReactNode;
-  /** Sheets are presented below the status bar, so they skip the top inset. */
+  /** iOS page sheets are presented below the status bar, so they skip the top inset. */
   inSheet?: boolean;
 }
 
@@ -22,7 +22,7 @@ export function ScreenHeader({ title, leading, trailing, inSheet = false }: Scre
   const router = useRouter();
   const insets = useSafeAreaInsets();
   return (
-    <View style={[styles.bar, { paddingTop: inSheet ? 10 : insets.top + 4 }]}>
+    <View style={[styles.bar, { paddingTop: inSheet && Platform.OS === 'ios' ? 10 : insets.top + 4 }]}>
       <View style={styles.side}>
         {leading ?? (
           <PressableScale accessibilityLabel="رجوع" onPress={() => router.back()} style={styles.back} hitSlop={8}>

@@ -1,7 +1,7 @@
 import * as Clipboard from 'expo-clipboard';
 import { Check, ChevronLeft, CircleCheck, Copy, type LucideIcon } from 'lucide-react-native';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, type ImageSourcePropType, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Image, type ImageSourcePropType, Platform, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/AppText';
 import { PressableScale } from '@/components/PressableScale';
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
   infoRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8 },
   infoIcon: { width: 36, height: 36, borderRadius: 11, backgroundColor: Theme.goldSoft, alignItems: 'center', justifyContent: 'center' },
   infoText: { flex: 1, gap: 1 },
-  mono: { fontFamily: 'monospace', writingDirection: 'ltr' },
+  mono: { fontFamily: Platform.select({ ios: 'Menlo', default: 'monospace' }), writingDirection: 'ltr' },
   copy: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
   divider: { height: 1, backgroundColor: Theme.line },
   logo: { paddingHorizontal: 8, paddingVertical: 4, backgroundColor: Theme.white, borderRadius: 6 },
