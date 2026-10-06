@@ -231,22 +231,24 @@ function DriverStrip() {
   const nav = useAppNav();
   const driver = store.student.driver;
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel="السائق" onPress={nav.driver} style={styles.driverStrip}>
-      <View style={styles.whiteCircle}>
-        <Bus size={18} color={Theme.ink} />
-      </View>
-      <View style={styles.flexGap1}>
-        <AppText size="subheadline" weight="bold">
-          السائق في الرحلة القادمة
-        </AppText>
-        <AppText size="caption" color={Theme.muted}>
-          {`${driver.name} · ${driver.vehicle.plateNumber}`}
-        </AppText>
-      </View>
+    <View style={styles.driverStrip}>
+      <Pressable accessibilityRole="button" accessibilityLabel="السائق" onPress={nav.driver} style={[styles.row12, styles.flex]}>
+        <View style={styles.whiteCircle}>
+          <Bus size={18} color={Theme.ink} />
+        </View>
+        <View style={styles.flexGap1}>
+          <AppText size="subheadline" weight="bold">
+            السائق في الرحلة القادمة
+          </AppText>
+          <AppText size="caption" color={Theme.muted}>
+            {`${driver.name} · ${driver.vehicle.plateNumber}`}
+          </AppText>
+        </View>
+      </Pressable>
       <PressableScale accessibilityLabel="الاتصال بالسائق" onPress={() => void Linking.openURL(`tel:${driver.phone}`)} style={styles.whiteCircle}>
         <Phone size={16} color={Theme.ink} />
       </PressableScale>
-    </Pressable>
+    </View>
   );
 }
 
