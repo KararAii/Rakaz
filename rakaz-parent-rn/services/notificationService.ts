@@ -1,19 +1,32 @@
-import * as Notifications from 'expo-notifications';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'react-native';
 
-const supported = Platform.OS === 'ios' || Platform.OS === 'android';
+type NotificationsModule = typeof import('expo-notifications');
+
+// Importing expo-notifications inside Expo Go on Android throws (push support was removed in SDK 53),
+// so the module is only loaded where it works; the in-app banner still covers every event.
+const isAndroidExpoGo =
+  Platform.OS === 'android' && Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+
+let Notifications: NotificationsModule | null = null;
+if ((Platform.OS === 'ios' || Platform.OS === 'android') && !isAndroidExpoGo) {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    Notifications = require('expo-notifications') as NotificationsModule;
+  } catch (error) {
+    console.log('[Notifications] module unavailable:', error);
+  }
+}
 
 // The in-app banner covers foreground delivery, so the system alert only shows in the background.
-if (supported) {
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowBanner: false,
-      shouldShowList: true,
-      shouldPlaySound: false,
-      shouldSetBadge: false,
-    }),
-  });
-}
+Notifications?.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: false,
+    shouldShowList: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 /**
  * Bridges trip events to the system notification center.
@@ -21,7 +34,7 @@ if (supported) {
  */
 export const NotificationService = {
   async requestAuthorization(): Promise<boolean> {
-    if (!supported) return false;
+    if (!Notifications) return false;
     try {
       const current = await Notifications.getPermissionsAsync();
       if (current.granted) return true;
@@ -34,7 +47,7 @@ export const NotificationService = {
   },
 
   post(title: string, body: string): void {
-    if (!supported) return;
+    if (!Notifications) return;
     Notifications.scheduleNotificationAsync({ content: { title, body, sound: 'default' }, trigger: null }).catch((error: unknown) => {
       console.log('[Notifications] post failed:', error);
     });
