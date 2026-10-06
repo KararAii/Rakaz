@@ -17,7 +17,6 @@ import { AccountStatus, AccountStatusTitle, daysUntilDue, type Payment, PaymentM
 import { Fmt } from '@/utils/fmt';
 import { Haptics } from '@/utils/haptics';
 
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const RING = 112;
 const STROKE = 12;
 const RADIUS = (RING - STROKE) / 2;
@@ -25,10 +24,11 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 function ProgressRing({ progress, resetKey }: { progress: number; resetKey: string }) {
   const value = useRef(new Animated.Value(0)).current;
-  const [percent, setPercent] = useState(0);
+  const [fraction, setFraction] = useState(0);
+  const percent = Math.trunc(fraction * 100);
 
   useEffect(() => {
-    const id = value.addListener(({ value: v }) => setPercent(Math.trunc(v * 100)));
+    const id = value.addListener(({ value: v }) => setFraction(v));
     return () => value.removeListener(id);
   }, [value]);
 
@@ -49,7 +49,7 @@ function ProgressRing({ progress, resetKey }: { progress: number; resetKey: stri
           </SvgLinearGradient>
         </Defs>
         <Circle cx={RING / 2} cy={RING / 2} r={RADIUS} stroke={withAlpha(Theme.white, 0.12)} strokeWidth={STROKE} fill="none" />
-        <AnimatedCircle
+        <Circle
           cx={RING / 2}
           cy={RING / 2}
           r={RADIUS}
@@ -58,7 +58,7 @@ function ProgressRing({ progress, resetKey }: { progress: number; resetKey: stri
           strokeLinecap="round"
           fill="none"
           strokeDasharray={`${CIRCUMFERENCE} ${CIRCUMFERENCE}`}
-          strokeDashoffset={value.interpolate({ inputRange: [0, 1], outputRange: [CIRCUMFERENCE, 0] })}
+          strokeDashoffset={CIRCUMFERENCE * (1 - Math.min(Math.max(fraction, 0), 1))}
           opacity={percent === 0 ? 0 : 1}
         />
       </Svg>
