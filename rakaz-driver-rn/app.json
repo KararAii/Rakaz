@@ -1,0 +1,71 @@
+{
+  "expo": {
+    "name": "ركاز السائق",
+    "slug": "rakaz-driver-rn",
+    "version": "1.0.0",
+    "scheme": "rakazdriver",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F3F1EC",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rork.rakazdriver",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "يستخدم ركاز موقعك لتسجيل الوصول والاستلام والتسليم وإبلاغ الإدارة في حالات الطوارئ.",
+        "LSApplicationQueriesSchemes": ["comgooglemaps", "waze", "tel"],
+        "CFBundleDevelopmentRegion": "ar"
+      }
+    },
+    "android": {
+      "package": "com.rork.rakazdriverandroid",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/images/icon.png"
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ],
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/rakaz_logo.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#10233F"
+        }
+      ],
+      [
+        "expo-localization",
+        {
+          "supportsRTL": true,
+          "forcesRTL": true,
+          "supportedLocales": ["ar"]
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "يستخدم ركاز موقعك لتسجيل الوصول والاستلام والتسليم وإبلاغ الإدارة في حالات الطوارئ."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
