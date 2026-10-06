@@ -157,6 +157,6 @@ export default function RakazMap({ region, markers = [], lines = [], interactive
 }
 
 const styles = StyleSheet.create({
-  container: { overflow: 'hidden', backgroundColor: LAND, direction: 'ltr' },
+  container: { overflow: 'hidden', backgroundColor: LAND },
   marker: { position: 'absolute' },
 });

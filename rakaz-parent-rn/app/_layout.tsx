@@ -7,6 +7,7 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { NotificationBanner } from '@/components/NotificationBanner';
+import { RTLRoot } from '@/components/RTLRoot';
 import { SplashView } from '@/components/SplashView';
 import { Fonts, Theme } from '@/constants/theme';
 import { useAppNav } from '@/hooks/useAppNav';
@@ -119,13 +120,15 @@ export default function RootLayout() {
   });
 
   return (
-    <SafeAreaProvider>
-      <SessionStoreProvider>
-        <FamilyStoreProvider>
-          <RootNavigator fontsLoaded={fontsLoaded || fontError != null} />
-        </FamilyStoreProvider>
-      </SessionStoreProvider>
-    </SafeAreaProvider>
+    <RTLRoot>
+      <SafeAreaProvider>
+        <SessionStoreProvider>
+          <FamilyStoreProvider>
+            <RootNavigator fontsLoaded={fontsLoaded || fontError != null} />
+          </FamilyStoreProvider>
+        </SessionStoreProvider>
+      </SafeAreaProvider>
+    </RTLRoot>
   );
 }
 
