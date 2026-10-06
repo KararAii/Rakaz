@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import {
   ArrowRight,
   CircleUserRound,
@@ -110,6 +111,7 @@ export default function StudentDetailScreen() {
 
   return (
     <View style={styles.root}>
+      <StatusBar style="dark" />
       <View style={[styles.topBar, { paddingTop: insets.top + 6 }]}>
         <PressableScale onPress={() => router.back()} accessibilityLabel="رجوع" style={styles.back}>
           <ArrowRight color={Rakaz.Ink} size={24} />

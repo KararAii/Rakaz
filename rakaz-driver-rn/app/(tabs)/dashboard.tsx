@@ -13,7 +13,7 @@ import {
   Wifi,
   type LucideIcon,
 } from 'lucide-react-native';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, ScrollView, StyleSheet, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
@@ -26,22 +26,23 @@ import { useUiStore } from '@/store/uiStore';
 import { TripPhase } from '@/types/models';
 import { ArabicFormat, arabicDigits } from '@/utils/arabicFormat';
 
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-
 function ProgressRing({ progress, done, total }: { progress: number; done: number; total: number }) {
   const size = 92;
   const stroke = 8;
   const r = (size - stroke) / 2;
   const circumference = 2 * Math.PI * r;
   const value = useRef(new Animated.Value(progress)).current;
+  const [shown, setShown] = useState(progress);
   useEffect(() => {
+    const id = value.addListener(({ value: v }) => setShown(v));
     Animated.spring(value, { toValue: progress, stiffness: 80, damping: 14, useNativeDriver: false }).start();
+    return () => value.removeListener(id);
   }, [progress, value]);
   return (
     <View style={styles.ring}>
       <Svg width={size} height={size} style={StyleSheet.absoluteFill}>
         <Circle cx={size / 2} cy={size / 2} r={r} stroke={withAlpha(Rakaz.White, 0.12)} strokeWidth={stroke} fill="none" />
-        <AnimatedCircle
+        <Circle
           cx={size / 2}
           cy={size / 2}
           r={r}
@@ -50,7 +51,7 @@ function ProgressRing({ progress, done, total }: { progress: number; done: numbe
           strokeLinecap="round"
           fill="none"
           strokeDasharray={`${circumference} ${circumference}`}
-          strokeDashoffset={value.interpolate({ inputRange: [0, 1], outputRange: [circumference, 0] })}
+          strokeDashoffset={circumference * (1 - Math.min(1, Math.max(0, shown)))}
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
         />
       </Svg>

@@ -9,8 +9,6 @@ import { ArabicFormat } from '@/utils/arabicFormat';
 
 import { type RouteMapProps, buildRouteMapModel } from './routeMapModel';
 
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-
 /**
  * Web fallback (react-native-maps has no web support): the stylised offline map from the Android app —
  * muted streets, the Shatt al-Arab, a gold route, numbered stops, the school and a pulsing bus marker.
@@ -111,18 +109,26 @@ export default function RouteMap({ focus = null, zoom = 1, style }: RouteMapProp
             );
           })}
 
-          <AnimatedCircle
-            cx={bus.x}
-            cy={bus.y}
-            r={pulse.interpolate({ inputRange: [0, 1], outputRange: [17, 35] })}
-            fill={withAlpha(Rakaz.Gold, 0.35)}
-            opacity={pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 0] })}
-          />
           <Circle cx={bus.x} cy={bus.y} r={17} fill={Rakaz.Gold} stroke={Rakaz.Navy} strokeWidth={3} />
           <G transform={`rotate(${model.heading} ${bus.x} ${bus.y})`}>
             <Polygon points={`${bus.x},${bus.y - 8} ${bus.x + 6},${bus.y + 7} ${bus.x},${bus.y + 3} ${bus.x - 6},${bus.y + 7}`} fill={Rakaz.White} />
           </G>
         </Svg>
+      ) : null}
+      {w > 0 && h > 0 ? (
+        <View pointerEvents="none" style={styles.overlay}>
+          <Animated.View
+            style={[
+              styles.pulse,
+              {
+                left: bus.x - 28,
+                top: bus.y - 28,
+                opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
+                transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1.25] }) }],
+              },
+            ]}
+          />
+        </View>
       ) : null}
     </View>
   );
@@ -130,4 +136,6 @@ export default function RouteMap({ focus = null, zoom = 1, style }: RouteMapProp
 
 const styles = StyleSheet.create({
   container: { backgroundColor: Rakaz.MapLand, overflow: 'hidden' },
+  overlay: { ...StyleSheet.absoluteFill },
+  pulse: { position: 'absolute', width: 56, height: 56, borderRadius: 28, backgroundColor: withAlpha(Rakaz.Gold, 0.35) },
 });
