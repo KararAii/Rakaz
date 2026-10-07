@@ -1,7 +1,10 @@
 import createContextHook from '@nkzw/create-context-hook';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { buildTripId, todayISO, toCanonicalStudentId } from '@rakaz/contract';
+
 import { MockData } from '@/data/mockData';
+import { getParentCommands } from '@/services/backend';
 import { NotificationService } from '@/services/notificationService';
 import * as L from '@/store/familyLogic';
 import type { FamilyState } from '@/store/familyLogic';
@@ -256,8 +259,20 @@ export const [FamilyStoreProvider, useFamily] = createContextHook(() => {
       },
 
       confirmHandover(): void {
-        patch({ handoverConfirmedAt: Date.now() });
+        const at = Date.now();
+        patch({ handoverConfirmedAt: at });
         Haptics.success();
+        const studentId = toCanonicalStudentId(get().selectedStudentID) ?? get().selectedStudentID;
+        void getParentCommands()
+          .confirmHandover({
+            tripId: buildTripId({ dateISO: todayISO(), routeId: 'R-204', tripKind: 'afternoon' }),
+            studentId,
+            confirmed: true,
+            issueReported: false,
+            at,
+            guardianUid: null,
+          })
+          .catch((error: unknown) => console.log('[RakazLink] confirmHandover', error));
       },
 
       dismissHandover(): void {
@@ -312,6 +327,18 @@ export const [FamilyStoreProvider, useFamily] = createContextHook(() => {
         patch({ absences });
         Storage.save(Keys.absences, absences);
         Haptics.success();
+        void getParentCommands()
+          .reportAbsence({
+            id: absence.id,
+            studentId: toCanonicalStudentId(absence.studentID) ?? absence.studentID,
+            day: absence.day,
+            scope: absence.scope,
+            reason: absence.reason,
+            note: absence.note,
+            createdAt: absence.createdAt,
+            guardianUid: null,
+          })
+          .catch((error: unknown) => console.log('[RakazLink] reportAbsence', error));
         setTimeout(() => {
           const current = get().absences;
           if (!current.some((a) => a.id === absence.id)) return;
@@ -334,6 +361,17 @@ export const [FamilyStoreProvider, useFamily] = createContextHook(() => {
         patch({ students });
         Storage.save(Keys.addresses, Object.fromEntries(students.map((st) => [st.id, st.address])));
         Haptics.success();
+        void getParentCommands()
+          .updateAddress({
+            studentId: toCanonicalStudentId(studentID) ?? studentID,
+            label: address.landmark || address.neighborhood || 'المنزل',
+            area: address.area,
+            street: address.street,
+            coordinate: { latitude: address.latitude, longitude: address.longitude },
+            updatedAt: Date.now(),
+            guardianUid: null,
+          })
+          .catch((error: unknown) => console.log('[RakazLink] updateAddress', error));
       },
 
       /** Guardian says the student has not arrived: hand off to support and alert the operations team. */
@@ -341,6 +379,17 @@ export const [FamilyStoreProvider, useFamily] = createContextHook(() => {
         patch({ handoverPending: false });
         const name = L.currentStudent(get()).firstName;
         submitTicket(TicketKind.complaint, TicketTopic.timing, `لم يصل ${name} إلى المنزل رغم تسجيل الوصول في رحلة العودة.`);
+        const studentId = toCanonicalStudentId(get().selectedStudentID) ?? get().selectedStudentID;
+        void getParentCommands()
+          .reportHandoverIssue({
+            tripId: buildTripId({ dateISO: todayISO(), routeId: 'R-204', tripKind: 'afternoon' }),
+            studentId,
+            confirmed: false,
+            issueReported: true,
+            at: Date.now(),
+            guardianUid: null,
+          })
+          .catch((error: unknown) => console.log('[RakazLink] reportHandoverIssue', error));
       },
     };
   }, []);
