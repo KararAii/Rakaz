@@ -1,0 +1,75 @@
+{
+  "expo": {
+    "name": "ركاز",
+    "slug": "rakaz-parent-rn",
+    "version": "1.0.0",
+    "scheme": "rakaz",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F3F4F1",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rork.rakaz",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["tel", "whatsapp"],
+        "CFBundleDevelopmentRegion": "ar"
+      }
+    },
+    "android": {
+      "package": "com.rork.rakaz",
+      "adaptiveIcon": {
+        "backgroundColor": "#071D36",
+        "foregroundImage": "./assets/images/icon.png"
+      },
+      "permissions": ["INTERNET", "POST_NOTIFICATIONS"],
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/IBMPlexSansArabic-Regular.ttf",
+            "./assets/fonts/IBMPlexSansArabic-Medium.ttf",
+            "./assets/fonts/IBMPlexSansArabic-SemiBold.ttf",
+            "./assets/fonts/IBMPlexSansArabic-Bold.ttf"
+          ]
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/rakaz_logo.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#05152A"
+        }
+      ],
+      [
+        "expo-localization",
+        {
+          "supportsRTL": true,
+          "forcesRTL": true,
+          "supportedLocales": ["ar"]
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#C09034"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
