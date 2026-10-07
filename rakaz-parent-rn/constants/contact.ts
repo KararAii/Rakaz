@@ -1,0 +1,2 @@
+export const ADMIN_PHONE = '+9647801112233';
+export const WHATSAPP_NUMBER = '9647801112233';
