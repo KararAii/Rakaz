@@ -78,3 +78,9 @@ GOOGLE_MAPS_API_KEY=xxxx npx expo run:android
 - بلاغ الغياب (`reportAbsence`) يجب أن يصل إلى قائمة السائق ليُعلَّم الطالب غائباً.
 - تحديث موقع المنزل (`updateAddress`) يجب أن يحدّث نقطة التوقف في مسار السائق.
 - تأكيد الاستلام (`confirmHandover`) أو الإبلاغ عن مشكلة (`reportHandoverIssue`) يُرسل إلى الإدارة.
+
+## الربط مع Firebase
+
+انظر `/LINKING.md` والحزمة المشتركة `@rakaz/contract`.
+لتفعيل الربط لاحقاً: `services/backend/config.ts` → `PARENT_BACKEND_MODE = "firebase"`.
+الأوامر (غياب / عنوان / استلام) تمرّ أصلاً عبر `getParentCommands()`.

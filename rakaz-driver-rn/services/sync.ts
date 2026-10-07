@@ -1,16 +1,24 @@
 import type { PendingAction } from '@/types/models';
 
-const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+import { getTripEventWriter, pendingToTripEvents, snapshotFromEvents } from '@/services/backend';
 
-/** Sends queued driver events to the backend. Simulated until the admin backend is connected. */
+/**
+ * Sends queued driver events to the backend.
+ * Uses `@rakaz/contract` payloads via services/backend (local stub or Firebase).
+ */
 export const SyncService = {
   async send(actions: PendingAction[]): Promise<number> {
-    await delay(900);
+    const writer = getTripEventWriter();
+    const events = pendingToTripEvents(actions);
+    await writer.writeEvents(events);
+    const snapshot = snapshotFromEvents(events);
+    if (snapshot) {
+      await writer.upsertTrip(snapshot);
+    }
     return actions.length;
   },
 
   async ping(): Promise<boolean> {
-    await delay(600);
-    return true;
+    return getTripEventWriter().ping();
   },
 };

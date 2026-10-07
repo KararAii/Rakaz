@@ -45,3 +45,8 @@ SVG منمّقة (نفس خريطة أندرويد الأصلية) لأن `react
 - **الموقع**: GPS إن كان ضمن 60 كم من المدرسة، وإلا موقع المحطة مع `isEstimatedLocation = true`
   ويظهر «(تقديري)» في سجل الطالب.
 - **RTL إجباري** عبر `I18nManager.forceRTL(true)` وإضافة `expo-localization` (`forcesRTL`).
+
+## الربط مع Firebase
+
+انظر `/LINKING.md` والحزمة المشتركة `@rakaz/contract`.
+لتفعيل الربط لاحقاً: `services/backend/config.ts` → `DRIVER_BACKEND_MODE = "firebase"`.
