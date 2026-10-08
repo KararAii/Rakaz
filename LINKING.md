@@ -1,13 +1,16 @@
 # دليل تسليم الربط — ركاز × Firebase
 
-هذا المستند موجّه لمطور Firebase الذي سيربط `rakaz-driver-rn` و`rakaz-parent-rn`.
+هذا المستند موجّه لمطور Firebase الذي سيربط `rakaz-driver-rn` و`rakaz-parent-rn` و`rakaz-dashboard`.
+
+> مستودع `dashboar-RAKAZ` الخارجي لم يكن متاحاً (404). اللوحة مُجهَّزة داخل هذا المستودع في `rakaz-dashboard/`.
 
 ## الحالة الحالية
 
 | الطبقة | الحالة |
 | --- | --- |
 | واجهات التطبيقين | مكتملة (سلوك محلي / ديمو) |
-| حزمة العقود `@rakaz/contract` | جاهزة |
+| لوحة الإدارة `rakaz-dashboard` | جاهزة للربط (وضع local افتراضي) |
+| حزمة العقود `@rakaz/contract` | جاهزة (+ `RakazAdminApi`) |
 | طابور أحداث السائق | جاهز ويُحوَّل إلى `RakazTripEvent` |
 | استماع ولي الأمر | واجهة جاهزة؛ الوضع الافتراضي محاكاة |
 | Firebase SDK | **غير مثبت** — يركّبه المختص |
@@ -35,16 +38,21 @@ rakaz-parent-rn/services/backend/ ← مصدر البث الحي
   config.ts                       بدّل إلى 'firebase'
   firebaseSource.ts               نفّذ onSnapshot هنا
   applyEvent.ts                   حوّل الحدث إلى باتش للـ store
+
+rakaz-dashboard/                  ← لوحة الإدارة
+  src/services/backend/config.ts  بدّل إلى 'firebase'
+  src/services/backend/firebaseAdmin.ts
 ```
 
 ## خطوات التنفيذ المقترحة
 
-### 1) تثبيت Firebase في التطبيقين
+### 1) تثبيت Firebase في الأطراف الثلاثة
 ```bash
 cd rakaz-driver-rn && npx expo install firebase
 cd ../rakaz-parent-rn && npx expo install firebase
+cd ../rakaz-dashboard && npm install firebase
 ```
-(أو `@react-native-firebase/*` مع Development Build.)
+(أو `@react-native-firebase/*` مع Development Build للتطبيقين.)
 
 ### 2) تنفيذ الكاتب (السائق)
 في `rakaz-driver-rn/services/backend/firebaseWriter.ts`:
@@ -74,17 +82,25 @@ cd ../rakaz-parent-rn && npx expo install firebase
 1. حدّث `trips/{tripId}` باستخدام `mapDriverActionToParent`
 2. أرسل FCM لأولياء الأمور المرتبطين بـ `studentId`
 
-### 6) توحيد المعرفات
+### 6) لوحة الإدارة
+في `rakaz-dashboard/src/services/backend/firebaseAdmin.ts` نفّذ `RakazAdminApi`:
+- كتابة `students` / `routes` / `drivers` / `schools`
+- `openDailyTrips` ينشئ وثائق `trips` لليوم
+- `watchLiveTrips` يستمع لمجموعة `trips`
+- ثم عيّن `DASHBOARD_BACKEND_MODE = 'firebase'`
+
+### 7) توحيد المعرفات
 استخدم دائماً `STU-*` في Firestore.
 جسر الديمو `st-*` ↔ `STU-*` موجود في `DEMO_STUDENT_ID_BRIDGE` للاختبار فقط.
+لوحة الإدارة هي مصدر الحقيقة لهذه المعرفات.
 
 ## اختبار القبول الأدنى
 
-1. سائق يسجّل `PICKED_UP` للطالب `STU-24031`
-2. تظهر وثيقة في `trip_events` و`trips`
-3. ولي الأمر يرى الحالة «تم استلام الطالب» بدون المحاكاة المحلية
-4. ولي الأمر يبلّغ غياباً → وثيقة في `absences`
-5. سائق يرى الغياب في رحلته (قراءة `absences` حيث `day == اليوم`)
+1. من اللوحة: افتح رحلات اليوم للمسار `R-204`
+2. سائق يسجّل `PICKED_UP` للطالب `STU-24031`
+3. تظهر وثيقة في `trip_events` و`trips` وتتحدث اللوحة مباشرة
+4. ولي الأمر يرى الحالة «تم استلام الطالب» بدون المحاكاة المحلية
+5. ولي الأمر يبلّغ غياباً → وثيقة في `absences` تظهر في اللوحة والسائق
 
 ## تشغيل typecheck
 
@@ -92,4 +108,5 @@ cd ../rakaz-parent-rn && npx expo install firebase
 cd packages/rakaz-contract && npx tsc --noEmit
 cd ../../rakaz-driver-rn && npm run typecheck
 cd ../rakaz-parent-rn && npm run typecheck
+cd ../rakaz-dashboard && npm run typecheck
 ```
