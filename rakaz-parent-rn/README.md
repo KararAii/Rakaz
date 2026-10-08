@@ -1,7 +1,7 @@
 # ركاز ولي الأمر — React Native
 
 نسخة React Native (Expo SDK 57 + TypeScript + expo-router) من تطبيق ولي الأمر، منقولة من تطبيق
-SwiftUI في `ios/Rakaz` بنفس الشاشات والمنطق والسلوك. مبنية بنفس أسلوب `rakaz-driver-rn` تمهيداً لربط
+SwiftUI في `legacy/ios-parent-swift` بنفس الشاشات والمنطق والسلوك. مبنية بنفس أسلوب `rakaz-driver-rn` تمهيداً لربط
 التطبيقين بخادم مشترك.
 
 ## التشغيل
