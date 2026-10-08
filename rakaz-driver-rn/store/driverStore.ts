@@ -1,7 +1,10 @@
 import createContextHook from '@nkzw/create-context-hook';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { toDriverLocalStudentId } from '@rakaz/contract';
+
 import { SampleData } from '@/data/sampleData';
+import { pullParentAbsences } from '@/services/backend';
 import { LocationTracker } from '@/services/location';
 import { NetworkMonitor } from '@/services/network';
 import { PersistenceService } from '@/services/persistence';
@@ -160,7 +163,34 @@ export const [DriverStoreProvider, useDriverStore] = createContextHook<DriverSto
       });
     };
 
+    const applyParentAbsences = async (): Promise<void> => {
+      const reports = await pullParentAbsences();
+      if (reports.length === 0) return;
+      const leg = currentLeg(get());
+      const bag = leg === TripLeg.AFTERNOON ? get().trip.afternoon : get().trip.morning;
+      for (const report of reports) {
+        const localId = toDriverLocalStudentId(report.studentId);
+        const record = bag[localId];
+        if (record && (record.status === StopStatus.ABSENT || record.status === StopStatus.PICKED_UP || record.status === StopStatus.DROPPED_OFF)) {
+          continue;
+        }
+        const morningOnly = report.scope === 'morningOnly';
+        const returnOnly = report.scope === 'returnOnly';
+        if (morningOnly && leg !== TripLeg.MORNING) continue;
+        if (returnOnly && leg !== TripLeg.AFTERNOON) continue;
+        if (leg == null) continue;
+        mutateRecord(localId, (r) => ({
+          ...r,
+          status: StopStatus.ABSENT,
+          note: report.note || report.reason,
+          completedAt: report.createdAt,
+        }));
+      }
+      persist();
+    };
+
     const sync = (): void => {
+      void applyParentAbsences();
       const s = get();
       if (!isOnline(s) || s.isSyncing || s.pending.length === 0) return;
       update((st) => ({ ...st, isSyncing: true }));

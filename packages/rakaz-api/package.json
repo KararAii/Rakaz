@@ -1,0 +1,26 @@
+{
+  "name": "@rakaz/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local linking backend for Rakaz driver, parent, and dashboard",
+  "scripts": {
+    "build": "esbuild src/server.ts --bundle --platform=node --format=cjs --outfile=dist/server.cjs --packages=bundle",
+    "dev": "npm run build && node dist/server.cjs",
+    "start": "npm run build && node dist/server.cjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rakaz/contract": "file:../rakaz-contract",
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.18",
+    "@types/express": "^5.0.2",
+    "@types/node": "^22.15.21",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.19.4",
+    "typescript": "~5.9.2"
+  }
+}

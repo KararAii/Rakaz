@@ -35,14 +35,16 @@ function MainShell() {
   const store = useFamily();
   const nav = useAppNav();
   const router = useRouter();
-  const { handoverPending, banner } = store.state;
-  const { startSimulation } = store;
+  const { handoverPending, banner, selectedStudentID, activeKind } = store.state;
+  const { startSimulation, startLiveBackend, stopLiveBackend } = store;
   const presented = useRef(false);
 
   useEffect(() => {
     startSimulation();
+    startLiveBackend();
     void NotificationService.requestAuthorization();
-  }, [startSimulation]);
+    return () => stopLiveBackend();
+  }, [startSimulation, startLiveBackend, stopLiveBackend, selectedStudentID, activeKind]);
 
   useEffect(() => {
     if (handoverPending && !presented.current) {
