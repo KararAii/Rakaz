@@ -1,4 +1,45 @@
-node_modules
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Env & secrets
 .env
-.expo
-.rork
+.env.*
+!.env.example
+*.pem
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Expo / Metro
+.expo/
+.rork/
+dist/
+web-build/
+.metro-health-check*
+
+# Build / IDE
+*.tsbuildinfo
+.DS_Store
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.idea/
+.vscode/
+*.swp
+
+# Large / local artifacts (never commit)
+*.mp4
+*.mov
+*.zip
+*.dmg
+rakaz-driver-demo.mp4
+
+# Generated Expo types (regenerated locally)
+**/expo-env.d.ts
+
+# OS
+Thumbs.db
