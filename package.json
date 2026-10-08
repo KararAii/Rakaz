@@ -1,0 +1,13 @@
+{
+  "name": "rakaz-monorepo",
+  "private": true,
+  "scripts": {
+    "api": "npm --prefix packages/rakaz-api run dev",
+    "dashboard": "npm --prefix rakaz-dashboard run dev",
+    "typecheck:contract": "npm --prefix packages/rakaz-contract run typecheck",
+    "typecheck:api": "npm --prefix packages/rakaz-api run typecheck",
+    "typecheck:dashboard": "npm --prefix rakaz-dashboard run typecheck",
+    "typecheck:driver": "npm --prefix rakaz-driver-rn run typecheck",
+    "typecheck:parent": "npm --prefix rakaz-parent-rn run typecheck"
+  }
+}
