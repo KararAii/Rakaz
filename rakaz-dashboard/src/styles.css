@@ -1,0 +1,266 @@
+:root {
+  --ink: #071d36;
+  --ink-soft: #1a3a55;
+  --muted: #6b7c8c;
+  --cream: #f3f4f1;
+  --paper: #ffffff;
+  --gold: #c09034;
+  --gold-soft: #f4e8d0;
+  --teal: #1a393e;
+  --green: #2f6b4f;
+  --red: #b33a3a;
+  --line: rgba(7, 29, 54, 0.08);
+  --shadow: 0 12px 40px rgba(7, 29, 54, 0.08);
+  --radius: 18px;
+  --font: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 600px at 100% -10%, rgba(192, 144, 52, 0.12), transparent 55%),
+    radial-gradient(900px 500px at -10% 110%, rgba(26, 57, 62, 0.1), transparent 50%),
+    linear-gradient(180deg, #eef2ef 0%, var(--cream) 45%, #e8ece7 100%);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  padding: 28px 20px;
+  background: linear-gradient(180deg, var(--ink) 0%, var(--teal) 100%);
+  color: #f7f4ee;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+.brand strong {
+  font-size: 1.45rem;
+  letter-spacing: 0.02em;
+}
+
+.brand span {
+  color: rgba(247, 244, 238, 0.65);
+  font-size: 0.9rem;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nav a {
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: rgba(247, 244, 238, 0.82);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav a:hover,
+.nav a.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.nav a.active {
+  box-shadow: inset 0 0 0 1px rgba(192, 144, 52, 0.45);
+}
+
+.mode-pill {
+  margin-top: auto;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: rgba(247, 244, 238, 0.75);
+}
+
+.mode-pill b {
+  color: var(--gold);
+}
+
+.main {
+  padding: 28px 32px 48px;
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.page-head h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.page-head p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.btn {
+  border: 0;
+  border-radius: 12px;
+  padding: 11px 16px;
+  background: var(--ink);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn:hover {
+  background: var(--ink-soft);
+}
+
+.btn.secondary {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.grid.stats {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  margin-bottom: 20px;
+}
+
+.card {
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+  padding: 18px;
+}
+
+.stat .label {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.stat .value {
+  margin-top: 8px;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: right;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge.live {
+  background: #e5f3ea;
+  color: var(--green);
+}
+
+.badge.idle {
+  background: #eef1f4;
+  color: var(--muted);
+}
+
+.badge.warn {
+  background: #f8ebe0;
+  color: #9a5a1a;
+}
+
+.empty {
+  padding: 28px;
+  text-align: center;
+  color: var(--muted);
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 16px;
+  }
+
+  .nav {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .mode-pill {
+    display: none;
+  }
+
+  .main {
+    padding: 20px 16px 40px;
+  }
+}

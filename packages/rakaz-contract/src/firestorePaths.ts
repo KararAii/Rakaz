@@ -38,6 +38,11 @@ export const FirestorePaths = {
 
   parentNotifications: (guardianUid: FirebaseUid) => `guardians/${guardianUid}/notifications`,
   parentNotification: (guardianUid: FirebaseUid, id: string) => `guardians/${guardianUid}/notifications/${id}`,
+
+  schools: () => 'schools',
+  school: (schoolId: string) => `schools/${schoolId}`,
+
+  adminMeta: () => 'admin_meta/overview',
 } as const;
 
 /** Suggested composite indexes (document for the Firebase console). */
