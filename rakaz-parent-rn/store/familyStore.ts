@@ -1,10 +1,22 @@
 import createContextHook from '@nkzw/create-context-hook';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { buildTripId, todayISO, toCanonicalStudentId } from '@rakaz/contract';
+import {
+  buildTripId,
+  todayISO,
+  toCanonicalStudentId,
+  type RakazTripSnapshot,
+  type RakazUnsubscribe,
+} from '@rakaz/contract';
 
 import { MockData } from '@/data/mockData';
-import { getParentCommands } from '@/services/backend';
+import {
+  getParentCommands,
+  getTripLiveSource,
+  patchFromTripSnapshot,
+  resolveActiveTripId,
+  usesLiveBackend,
+} from '@/services/backend';
 import { NotificationService } from '@/services/notificationService';
 import * as L from '@/store/familyLogic';
 import type { FamilyState } from '@/store/familyLogic';
@@ -114,6 +126,8 @@ export const [FamilyStoreProvider, useFamily] = createContextHook(() => {
   const didNotifyNear = useRef(false);
   const simulation = useRef<ReturnType<typeof setInterval> | null>(null);
   const bannerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const liveUnsub = useRef<RakazUnsubscribe | null>(null);
+  const lastLiveStatus = useRef<number | null>(null);
 
   const actions = useMemo(() => {
     const get = (): FamilyState => stateRef.current;
@@ -241,6 +255,7 @@ export const [FamilyStoreProvider, useFamily] = createContextHook(() => {
       submitTicket,
 
       startSimulation(): void {
+        if (usesLiveBackend()) return;
         if (simulation.current != null) return;
         simulation.current = setInterval(tick, 1000);
       },
@@ -248,6 +263,98 @@ export const [FamilyStoreProvider, useFamily] = createContextHook(() => {
       stopSimulation(): void {
         if (simulation.current != null) clearInterval(simulation.current);
         simulation.current = null;
+      },
+
+      applyLiveSnapshot(snapshot: RakazTripSnapshot): void {
+        const live = patchFromTripSnapshot(snapshot);
+        const kind = live.tripKind;
+        const current = kind === TripKind.morning ? get().morningTrip : get().returnTrip;
+        const status = live.status ?? current.status;
+        const nextTrip: Trip = {
+          ...current,
+          kind,
+          status,
+          progress: snapshot.progress,
+          speedKmh: isMoving(status) ? Math.max(current.speedKmh, 28) : 0,
+          updatedAt: snapshot.updatedAt,
+        };
+        if (lastLiveStatus.current !== status) {
+          lastLiveStatus.current = status;
+          if (status !== current.status) notify(status, kind);
+        }
+        const partial: Partial<FamilyState> = kind === TripKind.morning ? { morningTrip: nextTrip } : { returnTrip: nextTrip };
+        if (live.switchToAfternoon) partial.activeKind = TripKind.afternoon;
+        else partial.activeKind = kind;
+        if (live.handoverPending) {
+          partial.handoverPending = true;
+          partial.handoverConfirmedAt = snapshot.handoverConfirmedAt;
+        } else if (snapshot.handoverConfirmedAt) {
+          partial.handoverPending = false;
+          partial.handoverConfirmedAt = snapshot.handoverConfirmedAt;
+        }
+        patch(partial);
+      },
+
+      startLiveBackend(): void {
+        if (!usesLiveBackend()) return;
+        if (simulation.current != null) {
+          clearInterval(simulation.current);
+          simulation.current = null;
+        }
+        liveUnsub.current?.();
+        liveUnsub.current = null;
+        const studentId = toCanonicalStudentId(get().selectedStudentID) ?? get().selectedStudentID;
+        const kind = get().activeKind === TripKind.afternoon ? 'afternoon' : 'morning';
+        const applySnap = (snapshot: RakazTripSnapshot): void => {
+          const live = patchFromTripSnapshot(snapshot);
+          const tripKind = live.tripKind;
+          const current = tripKind === TripKind.morning ? get().morningTrip : get().returnTrip;
+          const status = live.status ?? current.status;
+          const nextTrip: Trip = {
+            ...current,
+            kind: tripKind,
+            status,
+            progress: snapshot.progress,
+            speedKmh: isMoving(status) ? Math.max(current.speedKmh, 28) : 0,
+            updatedAt: snapshot.updatedAt,
+          };
+          if (lastLiveStatus.current !== status) {
+            lastLiveStatus.current = status;
+            if (status !== current.status) notify(status, tripKind);
+          }
+          const partial: Partial<FamilyState> = tripKind === TripKind.morning ? { morningTrip: nextTrip } : { returnTrip: nextTrip };
+          if (live.switchToAfternoon) partial.activeKind = TripKind.afternoon;
+          else partial.activeKind = tripKind;
+          if (live.handoverPending) {
+            partial.handoverPending = true;
+            partial.handoverConfirmedAt = snapshot.handoverConfirmedAt;
+          } else if (snapshot.handoverConfirmedAt) {
+            partial.handoverPending = false;
+            partial.handoverConfirmedAt = snapshot.handoverConfirmedAt;
+          }
+          patch(partial);
+        };
+        void (async () => {
+          let tripId: string | null = null;
+          try {
+            tripId = await resolveActiveTripId(studentId, kind);
+          } catch {
+            tripId = buildTripId({ dateISO: todayISO(), routeId: 'R-204', tripKind: kind });
+          }
+          if (!tripId) return;
+          liveUnsub.current = getTripLiveSource().watchTrip(
+            tripId,
+            (snap) => {
+              if (snap) applySnap(snap);
+            },
+            (error) => console.log('[RakazLink] live trip error', error),
+          );
+        })();
+      },
+
+      stopLiveBackend(): void {
+        liveUnsub.current?.();
+        liveUnsub.current = null;
       },
 
       restartDemo(): void {
@@ -418,6 +525,8 @@ export const [FamilyStoreProvider, useFamily] = createContextHook(() => {
       cancelled = true;
       if (simulation.current != null) clearInterval(simulation.current);
       if (bannerTimer.current) clearTimeout(bannerTimer.current);
+      liveUnsub.current?.();
+      liveUnsub.current = null;
     };
   }, []);
 

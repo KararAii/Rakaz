@@ -1,54 +1,33 @@
-# ركاز — لوحة الإدارة (جاهزة للربط)
+# ركاز — لوحة الإدارة
 
-لوحة ويب عربية (Vite + React) تدير مصدر الحقيقة الذي تستهلكه تطبيقات السائق وولي الأمر عبر Firebase.
+لوحة ويب عربية (Vite + React) لإدارة الطلاب والمسارات والرحلات والغياب.
 
-> ملاحظة: مستودع `https://github.com/KararAii/dashboar-RAKAZ.git` لم يكن متاحاً من بيئة الوكيل (404).
-> أُنشئت هذه اللوحة داخل `KararAii/Rakaz` بنفس عقود `@rakaz/contract`. يمكن لاحقاً نقلها أو مزامنتها مع مستودع الداشبورد المنفصل بعد منح الصلاحيات.
-
-## التشغيل
+## التشغيل مع الباكند المشترك
 
 ```bash
-cd rakaz-dashboard
-npm install
-npm run dev          # http://localhost:5173
-npm run typecheck
+# طرفية 1 — API
+cd packages/rakaz-api && npm install && npm run start
+
+# طرفية 2 — الداشبورد
+cd rakaz-dashboard && npm install && npm run dev
 ```
 
-## وضع الربط
-
-| الوضع | الملف | المعنى |
-| --- | --- | --- |
-| `local` (افتراضي) | `src/services/backend/config.ts` | بيانات ديمو بنفس `STU-24031` / `R-204` |
-| `firebase` | نفّذ `firebaseAdmin.ts` ثم بدّل العلم | قراءة/كتابة Firestore الحقيقية |
-
-## دور اللوحة في الربط
-
-```
-لوحة الإدارة ──upsert──► students / routes / drivers / trips (فتح اليوم)
-                              ▲
-السائق ──trip_events──┘      │
-                              ▼
-                         ولي الأمر (onSnapshot)
-                              │
-                         absences / addresses / handovers
-                              ▼
-                         لوحة الإدارة تراقب
-```
-
-الواجهة الإدارية: `RakazAdminApi` في `@rakaz/contract` (`src/admin.ts`).
+الوضع الافتراضي: `http` → `http://127.0.0.1:8787`  
+غيّر عبر `VITE_RAKAZ_API_URL` أو `DASHBOARD_BACKEND_MODE` في `src/services/backend/config.ts`.
 
 ## الشاشات
 
-- نظرة عامة + زر فتح رحلات اليوم
-- الطلاب (معرّفات `STU-*`)
-- المسارات والمحطات
-- الرحلات الحية
+- نظرة عامة + فتح رحلات اليوم + بث إشعار
+- الطلاب (CRUD)
+- السائقون (CRUD)
+- المسارات
+- الرحلات الحية (SSE)
 - الغياب
 
-## لمطور Firebase
+## أوضاع الربط
 
-1. ثبّت `firebase` في هذه الحزمة.
-2. نفّذ `src/services/backend/firebaseAdmin.ts` باستخدام `FirestorePaths`.
-3. عيّن `DASHBOARD_BACKEND_MODE = 'firebase'`.
-4. أضف Auth للمشرفين (بريد/كلمة مرور أو Custom Claims `role=admin`).
-5. Security Rules: الكتابة الإدارية للمستخدمين ذوي صلاحية admin فقط.
+| الوضع | المعنى |
+| --- | --- |
+| `http` | باكند `rakaz-api` (موصى به للربط) |
+| `local` | بيانات داخل المتصفح فقط |
+| `firebase` | نفّذ `firebaseAdmin.ts` ثم بدّل العلم |

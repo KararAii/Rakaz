@@ -5,6 +5,7 @@ import { DASHBOARD_BACKEND_MODE } from '@/services/backend';
 const links = [
   { to: '/', label: 'نظرة عامة', end: true },
   { to: '/students', label: 'الطلاب' },
+  { to: '/drivers', label: 'السائقون' },
   { to: '/routes', label: 'المسارات' },
   { to: '/trips', label: 'الرحلات الحية' },
   { to: '/absences', label: 'الغياب' },

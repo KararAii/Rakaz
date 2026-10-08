@@ -1,8 +1,9 @@
 /**
  * Backend mode for the parent app.
- * - `simulation`: keep local setInterval demo (default).
- * - `firebase`: subscribe via FirebaseTripLiveSource once implemented.
+ * - `simulation`: local setInterval demo (offline).
+ * - `http`: shared rakaz-api live trips + commands (recommended for linking).
+ * - `firebase`: production Firestore listeners.
  */
-export type ParentBackendMode = 'simulation' | 'firebase';
+export type ParentBackendMode = 'simulation' | 'http' | 'firebase';
 
-export const PARENT_BACKEND_MODE: ParentBackendMode = 'simulation';
+export const PARENT_BACKEND_MODE: ParentBackendMode = 'http';
