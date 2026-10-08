@@ -100,6 +100,11 @@ export function mapDriverActionToParent(
         status: null,
         notification: null,
       };
+    default:
+      return {
+        status: null,
+        notification: null,
+      };
   }
 }
 

@@ -35,6 +35,24 @@ export const DEMO_STUDENT_ID_BRIDGE: ReadonlyArray<{
     parentLocalId: 'STU-24032',
     note: 'Demo only',
   },
+  {
+    driverLocalId: 'st-3',
+    canonicalId: 'STU-24033',
+    parentLocalId: 'STU-24033',
+    note: 'Demo bridge for driver sample st-3',
+  },
+  {
+    driverLocalId: 'st-4',
+    canonicalId: 'STU-24034',
+    parentLocalId: 'STU-24034',
+    note: 'Demo bridge for driver sample st-4',
+  },
+  {
+    driverLocalId: 'st-5',
+    canonicalId: 'STU-24035',
+    parentLocalId: 'STU-24035',
+    note: 'Demo bridge for driver sample st-5',
+  },
 ];
 
 const driverToCanonical = new Map(DEMO_STUDENT_ID_BRIDGE.map((row) => [row.driverLocalId, row.canonicalId]));

@@ -39,7 +39,15 @@ export function createLocalAdminApi(): RakazAdminApi {
 
   return {
     async getOverview() {
-      return demoOverview();
+      const active = trips.filter((t) => t.status > 0 && t.status < 7);
+      return {
+        ...demoOverview(),
+        activeTrips: active.length,
+        studentsOnBoard: active.filter((t) => t.status >= 4 && t.status <= 5).length,
+        absencesToday: absences.length,
+        openHandovers: trips.filter((t) => t.handoverPending).length,
+        updatedAt: Date.now(),
+      };
     },
     async listStudents() {
       return [...students];

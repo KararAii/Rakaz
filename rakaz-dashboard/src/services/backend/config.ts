@@ -1,8 +1,9 @@
 /**
  * Backend mode for the admin dashboard.
- * - `local`: demo seed data (default) — safe without Firebase.
- * - `firebase`: use FirebaseAdminApi once the specialist fills firebaseAdmin.ts.
+ * - `local`: in-memory demo (no server).
+ * - `http`: shared rakaz-api (recommended for linking).
+ * - `firebase`: production Firestore admin API.
  */
-export type DashboardBackendMode = 'local' | 'firebase';
+export type DashboardBackendMode = 'local' | 'http' | 'firebase';
 
-export const DASHBOARD_BACKEND_MODE: DashboardBackendMode = 'local';
+export const DASHBOARD_BACKEND_MODE: DashboardBackendMode = 'http';
